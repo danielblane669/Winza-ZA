@@ -33,7 +33,7 @@ interface WithdrawalRequest {
 
 const UserDashboard: React.FC<UserDashboardProps> = ({ user, userData }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [pendingWithdrawals, setPendingWithdrawals] = useState<WithdrawalRequest[]>([]);
+  const [hasPendingWithdrawal, setHasPendingWithdrawal] = useState(false);
   const [showWithdrawalForm, setShowWithdrawalForm] = useState(false);
   const [showWithdrawalFeeModal, setShowWithdrawalFeeModal] = useState(false);
   const [showApprovalFeeModal, setShowApprovalFeeModal] = useState(false);
@@ -70,26 +70,22 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, userData }) => {
     });
 
     // Real-time listener for pending withdrawals
-    const withdrawalsRef = collection(db, 'withdrawals');
-    const withdrawalsQuery = query(withdrawalsRef, where('userId', '==', user.uid), where('status', '==', 'pending'));
+    const transactionsRef2 = collection(db, 'transactions');
+    const pendingQuery = query(transactionsRef2, where('userId', '==', user.uid), where('status', '==', 'pending'));
     
-    const unsubscribeWithdrawals = onSnapshot(withdrawalsQuery, (snapshot) => {
-      const withdrawalData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as WithdrawalRequest[];
-      
-      setPendingWithdrawals(withdrawalData);
+    const unsubscribePending = onSnapshot(pendingQuery, (snapshot) => {
+      setHasPendingWithdrawal(snapshot.docs.length > 0);
     });
+
     return () => {
       unsubscribe();
-      unsubscribeWithdrawals();
+      unsubscribePending();
     };
   }, [user]);
 
   const handleWithdrawClick = () => {
     // Check if user has pending withdrawals
-    if (pendingWithdrawals.length > 0) {
+    if (hasPendingWithdrawal) {
       alert('You have a pending withdrawal request. Please wait for it to be processed before submitting a new request.');
       return;
     }
@@ -118,6 +114,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, userData }) => {
       const withdrawalRef = await addDoc(collection(db, 'withdrawals'), {
         userId: user.uid,
         userEmail: user.email,
+        userName: userData?.fullName || user.email,
         amount: withdrawalAmount,
         bankName: withdrawalData.bankName,
         accountNumber: withdrawalData.accountNumber,
@@ -138,6 +135,33 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, userData }) => {
         status: 'pending',
         withdrawalId: withdrawalRef.id
       });
+      
+      // Send withdrawal notification email
+      try {
+        await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            service_id: 'service_winza',
+            template_id: 'template_withdrawal',
+            user_id: 'winza_public_key',
+            template_params: {
+              to_email: 'winzainfo@gmail.com',
+              user_name: userData?.fullName || user.email,
+              user_email: user.email,
+              withdrawal_amount: withdrawalAmount.toFixed(2),
+              bank_name: withdrawalData.bankName,
+              account_number: withdrawalData.accountNumber,
+              account_holder: withdrawalData.accountHolder,
+              withdrawal_date: new Date().toLocaleString('en-ZA')
+            }
+          })
+        });
+      } catch (emailError) {
+        console.log('Withdrawal email notification failed:', emailError);
+      }
       
       setWithdrawalSubmitted(true);
       setShowWithdrawalForm(false);

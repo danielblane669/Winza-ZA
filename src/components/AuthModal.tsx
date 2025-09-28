@@ -72,7 +72,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
               template_id: 'template_new_user',
               user_id: 'winza_public_key',
               template_params: {
-                to_email: 'info@winza.live',
+               to_email: 'winzainfo@gmail.com',
                 user_name: formData.fullName,
                 user_email: formData.email,
                 registration_date: new Date().toLocaleString('en-ZA')

@@ -33,7 +33,7 @@ const Contact: React.FC = () => {
           template_id: 'template_contact',
           user_id: 'winza_public_key',
           template_params: {
-            to_email: 'info@winza.live',
+            to_email: 'winzainfo@gmail.com',
             from_name: formData.name,
             from_email: formData.email,
             message: formData.message,
@@ -78,7 +78,7 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold text-white">Email</h4>
-                    <p className="text-gray-300">support@winza-za.co.za</p>
+                    <p className="text-gray-300">winzainfo@gmail.com</p>
                   </div>
                 </div>
                 
@@ -88,7 +88,7 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold text-white">Phone</h4>
-                    <p className="text-gray-300">+27 11 123 4567</p>
+                    <p className="text-gray-300">+27 63 031 6583</p>
                   </div>
                 </div>
                 
