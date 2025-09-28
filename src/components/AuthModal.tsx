@@ -19,7 +19,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
     email: '',
     password: '',
     confirmPassword: '',
-    fullName: ''
+    fullName: '',
+    phoneNumber: '',
+    occupation: ''
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,6 +53,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
         await setDoc(doc(db, 'users', userCredential.user.uid), {
           email: formData.email,
           fullName: formData.fullName,
+          phoneNumber: formData.phoneNumber,
+          occupation: formData.occupation,
           currentBalance: 0, // Start with R0 balance
           totalWins: 0,
           prizesWon: 0,
@@ -75,6 +79,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
                to_email: 'winzainfo@gmail.com',
                 user_name: formData.fullName,
                 user_email: formData.email,
+                user_phone: formData.phoneNumber,
+                user_occupation: formData.occupation,
                 registration_date: new Date().toLocaleString('en-ZA')
               }
             })
@@ -142,6 +148,45 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
             </div>
           )}
 
+          {mode === 'signup' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Phone Number
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  required
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="+27 123 456 789"
+                />
+              </div>
+            </div>
+          )}
+
+          {mode === 'signup' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                What do you do for a living?
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  name="occupation"
+                  value={formData.occupation}
+                  onChange={handleChange}
+                  required
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="e.g., Teacher, Engineer, Student"
+                />
+              </div>
+            </div>
+          )}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Email Address

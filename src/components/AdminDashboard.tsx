@@ -11,6 +11,8 @@ interface UserData {
   id: string;
   email: string;
   fullName: string;
+  phoneNumber: string;
+  occupation: string;
   currentBalance: number;
   withdrawalFee: number;
   approvalFee: number;
@@ -332,6 +334,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
                     <div className="flex justify-between">
                       <span className="text-gray-600 dark:text-gray-400">Email:</span>
                       <span className="font-medium text-gray-900 dark:text-white">{selectedUser.email}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">Phone:</span>
+                      <span className="font-medium text-gray-900 dark:text-white">{selectedUser.phoneNumber}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">Occupation:</span>
+                      <span className="font-medium text-gray-900 dark:text-white">{selectedUser.occupation}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600 dark:text-gray-400">Current Balance:</span>
