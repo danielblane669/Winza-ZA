@@ -1,0 +1,36 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gift box base -->
+  <rect x="25" y="45" width="50" height="35" fill="#DC2626" rx="4"/>
+  
+  <!-- Gift box lid -->
+  <rect x="20" y="35" width="60" height="15" fill="#EF4444" rx="4"/>
+  
+  <!-- Ribbon vertical -->
+  <rect x="47" y="35" width="6" height="45" fill="#B91C1C"/>
+  
+  <!-- Ribbon horizontal -->
+  <rect x="20" y="47" width="60" height="6" fill="#B91C1C"/>
+  
+  <!-- Glowing Rand symbol -->
+  <g transform="translate(50,25)">
+    <circle cx="0" cy="0" r="15" fill="url(#glowGradient)" opacity="0.8"/>
+    <text x="0" y="7" text-anchor="middle" font-size="20" font-weight="bold" fill="#FCD34D">R</text>
+  </g>
+  
+  <!-- Starbursts -->
+  <g fill="#FCD34D">
+    <polygon points="15,20 17,15 19,20 24,18 19,20 17,25 15,20 10,18" opacity="0.9"/>
+    <polygon points="80,15 82,10 84,15 89,13 84,15 82,20 80,15 75,13" opacity="0.9"/>
+    <polygon points="85,65 87,60 89,65 94,63 89,65 87,70 85,65 80,63" opacity="0.7"/>
+    <polygon points="10,70 12,65 14,70 19,68 14,70 12,75 10,70 5,68" opacity="0.8"/>
+  </g>
+  
+  <!-- Gradient definitions -->
+  <defs>
+    <radialGradient id="glowGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FCD34D" stop-opacity="0.9"/>
+      <stop offset="70%" stop-color="#F59E0B" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#D97706" stop-opacity="0.3"/>
+    </radialGradient>
+  </defs>
+</svg>

@@ -66,23 +66,34 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
 
         // Send new user notification email
         try {
-          await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+          await fetch('https://api.mailersend.com/v1/email', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': 'Bearer mlsn.27898656bc690c603ee224cac9777cfbf7ab2865c24fb555d4daec9f5a2f6f2c'
             },
             body: JSON.stringify({
-              service_id: 'service_winza',
-              template_id: 'template_new_user',
-              user_id: 'winza_public_key',
-              template_params: {
-               to_email: 'winzainfo@gmail.com',
-                user_name: formData.fullName,
-                user_email: formData.email,
-                user_phone: formData.phoneNumber,
-                user_occupation: formData.occupation,
-                registration_date: new Date().toLocaleString('en-ZA')
-              }
+              from: {
+                email: 'noreply@winza-za.co.za',
+                name: 'Winza ZA'
+              },
+              to: [{
+                email: 'winzainfo@gmail.com',
+                name: 'Winza Admin'
+              }],
+              subject: 'New User Registration - Winza ZA',
+              html: `
+                <h2>New User Registration</h2>
+                <p>A new user has registered on Winza ZA:</p>
+                <ul>
+                  <li><strong>Name:</strong> ${formData.fullName}</li>
+                  <li><strong>Email:</strong> ${formData.email}</li>
+                  <li><strong>Phone:</strong> ${formData.phoneNumber}</li>
+                  <li><strong>Occupation:</strong> ${formData.occupation}</li>
+                  <li><strong>Registration Date:</strong> ${new Date().toLocaleString('en-ZA')}</li>
+                </ul>
+              `,
+              text: `New User Registration - Name: ${formData.fullName}, Email: ${formData.email}, Phone: ${formData.phoneNumber}, Occupation: ${formData.occupation}, Date: ${new Date().toLocaleString('en-ZA')}`
             })
           });
         } catch (emailError) {

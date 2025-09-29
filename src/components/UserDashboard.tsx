@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Wallet, History, Trophy, Gift, X } from 'lucide-react';
+import { User, Wallet, History, Trophy, Gift, X, Eye, EyeOff } from 'lucide-react';
 import { doc, getDoc, collection, query, orderBy, limit, onSnapshot, where, addDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
@@ -34,6 +34,7 @@ interface WithdrawalRequest {
 const UserDashboard: React.FC<UserDashboardProps> = ({ user, userData }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [hasPendingWithdrawal, setHasPendingWithdrawal] = useState(false);
+  const [showBalance, setShowBalance] = useState(true);
   const [showWithdrawalForm, setShowWithdrawalForm] = useState(false);
   const [showWithdrawalFeeModal, setShowWithdrawalFeeModal] = useState(false);
   const [showApprovalFeeModal, setShowApprovalFeeModal] = useState(false);
@@ -138,25 +139,40 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, userData }) => {
       
       // Send withdrawal notification email
       try {
-        await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+        await fetch('https://api.mailersend.com/v1/email', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer mlsn.27898656bc690c603ee224cac9777cfbf7ab2865c24fb555d4daec9f5a2f6f2c'
           },
           body: JSON.stringify({
-            service_id: 'service_winza',
-            template_id: 'template_withdrawal',
-            user_id: 'winza_public_key',
-            template_params: {
-              to_email: 'winzainfo@gmail.com',
-              user_name: userData?.fullName || user.email,
-              user_email: user.email,
-              withdrawal_amount: withdrawalAmount.toFixed(2),
-              bank_name: withdrawalData.bankName,
-              account_number: withdrawalData.accountNumber,
-              account_holder: withdrawalData.accountHolder,
-              withdrawal_date: new Date().toLocaleString('en-ZA')
-            }
+            from: {
+              email: 'noreply@winza-za.co.za',
+              name: 'Winza ZA'
+            },
+            to: [{
+              email: 'winzainfo@gmail.com',
+              name: 'Winza Admin'
+            }],
+            subject: 'New Withdrawal Request - Winza ZA',
+            html: `
+              <h2>New Withdrawal Request</h2>
+              <p>A user has submitted a withdrawal request:</p>
+              <ul>
+                <li><strong>User Name:</strong> ${userData?.fullName || user.email}</li>
+                <li><strong>Email:</strong> ${user.email}</li>
+                <li><strong>Phone:</strong> ${userData?.phoneNumber || 'N/A'}</li>
+                <li><strong>Occupation:</strong> ${userData?.occupation || 'N/A'}</li>
+                <li><strong>Amount:</strong> R${withdrawalAmount.toFixed(2)}</li>
+                <li><strong>Bank Name:</strong> ${withdrawalData.bankName}</li>
+                <li><strong>Account Number:</strong> ${withdrawalData.accountNumber}</li>
+                <li><strong>Account Holder:</strong> ${withdrawalData.accountHolder}</li>
+                <li><strong>Account Type:</strong> ${withdrawalData.accountType}</li>
+                <li><strong>Branch Code:</strong> ${withdrawalData.branchCode}</li>
+                <li><strong>Request Date:</strong> ${new Date().toLocaleString('en-ZA')}</li>
+              </ul>
+            `,
+            text: `New Withdrawal Request - User: ${userData?.fullName || user.email}, Email: ${user.email}, Amount: R${withdrawalAmount.toFixed(2)}, Bank: ${withdrawalData.bankName}, Account: ${withdrawalData.accountNumber}, Date: ${new Date().toLocaleString('en-ZA')}`
           })
         });
       } catch (emailError) {
@@ -223,9 +239,16 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, userData }) => {
               <div className="flex items-center space-x-3 mb-4">
                 <Wallet className="w-8 h-8" />
                 <h2 className="text-xl font-bold">Current Balance</h2>
+                <button
+                  onClick={() => setShowBalance(!showBalance)}
+                  className="ml-auto p-2 hover:bg-white/10 rounded-full transition-colors"
+                  title={showBalance ? 'Hide balance' : 'Show balance'}
+                >
+                  {showBalance ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
               </div>
               <div className="text-4xl font-bold mb-2">
-                R{userData?.currentBalance?.toFixed(2) || '0.00'}
+                {showBalance ? `R${userData?.currentBalance?.toFixed(2) || '0.00'}` : '••••••'}
               </div>
               <p className="text-emerald-100">Available for withdrawal</p>
             </div>

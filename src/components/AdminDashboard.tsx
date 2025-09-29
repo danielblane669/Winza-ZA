@@ -27,7 +27,7 @@ interface UserData {
 }
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
-  const [searchEmail, setSearchEmail] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
   const [balanceAmount, setBalanceAmount] = useState('');
   const [description, setDescription] = useState('');
@@ -41,8 +41,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
   }, []);
 
   const handleSearch = async () => {
-    if (!searchEmail.trim()) {
-      setError('Please enter an email address');
+    if (!searchTerm.trim()) {
+      setError('Please enter an email address or full name');
       return;
     }
 
@@ -52,11 +52,21 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
 
     try {
       const usersRef = collection(db, 'users');
-      const q = query(usersRef, where('email', '==', searchEmail.trim()));
-      const querySnapshot = await getDocs(q);
+      
+      // Search by email first
+      const emailQuery = query(usersRef, where('email', '==', searchTerm.trim()));
+      const emailSnapshot = await getDocs(emailQuery);
+      
+      let querySnapshot = emailSnapshot;
+      
+      // If no results by email, search by full name
+      if (emailSnapshot.empty) {
+        const nameQuery = query(usersRef, where('fullName', '==', searchTerm.trim()));
+        querySnapshot = await getDocs(nameQuery);
+      }
 
       if (querySnapshot.empty) {
-        setError('User not found');
+        setError('User not found by email or full name');
         setSelectedUser(null);
       } else {
         const userData = querySnapshot.docs[0].data() as UserData;
@@ -197,11 +207,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
               status: 'approved',
               description: transaction.description.replace('(Pending)', '(Approved)')
             });
-            
-            // Deduct the withdrawal amount from user balance
-            await updateDoc(userDocRef, {
-              currentBalance: increment(-transaction.amount)
-            });
           }
         }
       }
@@ -211,8 +216,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
       if (updatedUserDoc.exists()) {
         setSelectedUser({
           ...selectedUser,
-          [field]: value,
-          ...(field === 'paidApprovalFee' && value ? { currentBalance: updatedUserDoc.data().currentBalance } : {})
+          [field]: value
         });
       }
 
@@ -298,14 +302,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  User Email Address
+                  User Email or Full Name
                 </label>
                 <div className="flex space-x-2">
                   <input
-                    type="email"
-                    value={searchEmail}
-                    onChange={(e) => setSearchEmail(e.target.value)}
-                    placeholder="user@example.com"
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="user@example.com or John Doe"
                     className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                     onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                   />
@@ -595,7 +599,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
                 
                 <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                   <p className="text-blue-800 dark:text-blue-300 text-sm">
-                    <strong>Note:</strong> When you mark approval fee as paid, all pending withdrawals will be automatically approved. The balance will remain unchanged - you can manually adjust it using the balance management section above.
+                    <strong>Note:</strong> When you mark approval fee as paid, all pending withdrawals will be automatically approved. The user's balance will remain unchanged - you can manually adjust it using the balance management section above.
                   </p>
                 </div>
               </div>

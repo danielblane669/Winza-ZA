@@ -22,22 +22,35 @@ const Contact: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Send email using EmailJS
-      await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      // Send email using MailerSend
+      await fetch('https://api.mailersend.com/v1/email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer mlsn.27898656bc690c603ee224cac9777cfbf7ab2865c24fb555d4daec9f5a2f6f2c'
         },
         body: JSON.stringify({
-          service_id: 'service_winza',
-          template_id: 'template_contact',
-          user_id: 'winza_public_key',
-          template_params: {
-            to_email: 'winzainfo@gmail.com',
-            from_name: formData.name,
-            from_email: formData.email,
-            message: formData.message,
-            sent_date: new Date().toLocaleString('en-ZA')
+          from: {
+            email: 'noreply@winza-za.co.za',
+            name: 'Winza ZA Contact Form'
+          },
+          to: [{
+            email: 'winzainfo@gmail.com',
+            name: 'Winza Admin'
+          }],
+          subject: 'New Contact Form Message - Winza ZA',
+          html: `
+            <h2>New Contact Form Message</h2>
+            <p><strong>From:</strong> ${formData.name}</p>
+            <p><strong>Email:</strong> ${formData.email}</p>
+            <p><strong>Date:</strong> ${new Date().toLocaleString('en-ZA')}</p>
+            <h3>Message:</h3>
+            <p>${formData.message}</p>
+          `,
+          text: `New Contact Form Message from ${formData.name} (${formData.email}): ${formData.message}`,
+          reply_to: {
+            email: formData.email,
+            name: formData.name
           }
         })
       });
