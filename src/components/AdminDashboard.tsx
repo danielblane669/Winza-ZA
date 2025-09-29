@@ -53,27 +53,31 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
     try {
       const usersRef = collection(db, 'users');
       
-      // Search by email first
-      const emailQuery = query(usersRef, where('email', '==', searchTerm.trim()));
-      const emailSnapshot = await getDocs(emailQuery);
+      // Get all users and search locally for better flexibility
+      const allUsersSnapshot = await getDocs(usersRef);
+      const searchTermLower = searchTerm.trim().toLowerCase();
       
-      let querySnapshot = emailSnapshot;
+      let foundUser = null;
       
-      // If no results by email, search by full name
-      if (emailSnapshot.empty) {
-        const nameQuery = query(usersRef, where('fullName', '==', searchTerm.trim()));
-        querySnapshot = await getDocs(nameQuery);
-      }
+      allUsersSnapshot.docs.forEach(doc => {
+        const userData = doc.data();
+        const email = userData.email?.toLowerCase() || '';
+        const fullName = userData.fullName?.toLowerCase() || '';
+        
+        // Check if search term matches email or full name (case-insensitive)
+        if (email.includes(searchTermLower) || fullName.includes(searchTermLower)) {
+          foundUser = {
+            ...userData,
+            id: doc.id
+          };
+        }
+      });
 
-      if (querySnapshot.empty) {
+      if (!foundUser) {
         setError('User not found by email or full name');
         setSelectedUser(null);
       } else {
-        const userData = querySnapshot.docs[0].data() as UserData;
-        setSelectedUser({
-          ...userData,
-          id: querySnapshot.docs[0].id
-        });
+        setSelectedUser(foundUser as UserData);
       }
     } catch (err) {
       setError('Error searching for user');
