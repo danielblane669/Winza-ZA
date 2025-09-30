@@ -23,7 +23,7 @@ const Contact: React.FC = () => {
     
     try {
       // Send email using MailerSend
-      await fetch('https://api.mailersend.com/v1/email', {
+      const response = await fetch('https://api.mailersend.com/v1/email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,7 +31,7 @@ const Contact: React.FC = () => {
         },
         body: JSON.stringify({
           from: {
-            email: 'noreply@winza-za.co.za',
+            email: 'info@trial-3z0vklo7jz0lqx2n.mlsender.net',
             name: 'Winza ZA Contact Form'
           },
           to: [{
@@ -40,22 +40,42 @@ const Contact: React.FC = () => {
           }],
           subject: 'New Contact Form Message - Winza ZA',
           html: `
-            <h2>New Contact Form Message</h2>
-            <p><strong>From:</strong> ${formData.name}</p>
-            <p><strong>Email:</strong> ${formData.email}</p>
-            <p><strong>Date:</strong> ${new Date().toLocaleString('en-ZA')}</p>
-            <h3>Message:</h3>
-            <p>${formData.message}</p>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #059669; border-bottom: 2px solid #059669; padding-bottom: 10px;">New Contact Form Message</h2>
+              <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr><td style="padding: 8px 0; font-weight: bold;">From:</td><td style="padding: 8px 0;">${formData.name}</td></tr>
+                  <tr><td style="padding: 8px 0; font-weight: bold;">Email:</td><td style="padding: 8px 0;">${formData.email}</td></tr>
+                  <tr><td style="padding: 8px 0; font-weight: bold;">Date:</td><td style="padding: 8px 0;">${new Date().toLocaleString('en-ZA')}</td></tr>
+                </table>
+              </div>
+              <div style="background-color: #fef9e7; padding: 20px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                <h3 style="color: #f59e0b; margin-top: 0;">Message:</h3>
+                <p style="line-height: 1.6;">${formData.message}</p>
+              </div>
+              <p style="color: #6b7280; font-size: 14px;">This is an automated notification from Winza ZA contact form.</p>
+            </div>
           `,
-          text: `New Contact Form Message from ${formData.name} (${formData.email}): ${formData.message}`,
+          text: `New Contact Form Message - Winza ZA
+
+From: ${formData.name}
+Email: ${formData.email}
+Date: ${new Date().toLocaleString('en-ZA')}
+
+Message: ${formData.message}`,
           reply_to: {
             email: formData.email,
             name: formData.name
           }
         })
       });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error('MailerSend API Error:', response.status, errorData);
+      }
     } catch (error) {
-      console.error('Email sending failed:', error);
+      console.error('Contact form email sending failed:', error);
       // Continue with success message even if email fails
     }
     

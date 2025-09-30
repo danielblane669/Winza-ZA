@@ -138,46 +138,92 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, userData }) => {
       });
       
       // Send withdrawal notification email
-      try {
-        await fetch('https://api.mailersend.com/v1/email', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer mlsn.27898656bc690c603ee224cac9777cfbf7ab2865c24fb555d4daec9f5a2f6f2c'
-          },
-          body: JSON.stringify({
-            from: {
-              email: 'noreply@winza-za.co.za',
-              name: 'Winza ZA'
+      // Send withdrawal notification email using MailerSend
+      const sendWithdrawalEmail = async () => {
+        try {
+          const response = await fetch('https://api.mailersend.com/v1/email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer mlsn.27898656bc690c603ee224cac9777cfbf7ab2865c24fb555d4daec9f5a2f6f2c'
             },
-            to: [{
-              email: 'winzainfo@gmail.com',
-              name: 'Winza Admin'
-            }],
-            subject: 'New Withdrawal Request - Winza ZA',
-            html: `
-              <h2>New Withdrawal Request</h2>
-              <p>A user has submitted a withdrawal request:</p>
-              <ul>
-                <li><strong>User Name:</strong> ${userData?.fullName || user.email}</li>
-                <li><strong>Email:</strong> ${user.email}</li>
-                <li><strong>Phone:</strong> ${userData?.phoneNumber || 'N/A'}</li>
-                <li><strong>Occupation:</strong> ${userData?.occupation || 'N/A'}</li>
-                <li><strong>Amount:</strong> R${withdrawalAmount.toFixed(2)}</li>
-                <li><strong>Bank Name:</strong> ${withdrawalData.bankName}</li>
-                <li><strong>Account Number:</strong> ${withdrawalData.accountNumber}</li>
-                <li><strong>Account Holder:</strong> ${withdrawalData.accountHolder}</li>
-                <li><strong>Account Type:</strong> ${withdrawalData.accountType}</li>
-                <li><strong>Branch Code:</strong> ${withdrawalData.branchCode}</li>
-                <li><strong>Request Date:</strong> ${new Date().toLocaleString('en-ZA')}</li>
-              </ul>
-            `,
-            text: `New Withdrawal Request - User: ${userData?.fullName || user.email}, Email: ${user.email}, Amount: R${withdrawalAmount.toFixed(2)}, Bank: ${withdrawalData.bankName}, Account: ${withdrawalData.accountNumber}, Date: ${new Date().toLocaleString('en-ZA')}`
-          })
-        });
-      } catch (emailError) {
-        console.log('Withdrawal email notification failed:', emailError);
-      }
+            body: JSON.stringify({
+              from: {
+                email: 'info@trial-3z0vklo7jz0lqx2n.mlsender.net',
+                name: 'Winza ZA'
+              },
+              to: [{
+                email: 'winzainfo@gmail.com',
+                name: 'Winza Admin'
+              }],
+              subject: 'New Withdrawal Request - Winza ZA',
+              html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                  <h2 style="color: #dc2626; border-bottom: 2px solid #dc2626; padding-bottom: 10px;">New Withdrawal Request</h2>
+                  <p>A user has submitted a withdrawal request:</p>
+                  
+                  <div style="background-color: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc2626;">
+                    <h3 style="color: #dc2626; margin-top: 0;">User Information</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                      <tr><td style="padding: 8px 0; font-weight: bold;">Name:</td><td style="padding: 8px 0;">${userData?.fullName || user.email}</td></tr>
+                      <tr><td style="padding: 8px 0; font-weight: bold;">Email:</td><td style="padding: 8px 0;">${user.email}</td></tr>
+                      <tr><td style="padding: 8px 0; font-weight: bold;">Phone:</td><td style="padding: 8px 0;">${userData?.phoneNumber || 'N/A'}</td></tr>
+                      <tr><td style="padding: 8px 0; font-weight: bold;">Occupation:</td><td style="padding: 8px 0;">${userData?.occupation || 'N/A'}</td></tr>
+                    </table>
+                  </div>
+                  
+                  <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #059669;">
+                    <h3 style="color: #059669; margin-top: 0;">Withdrawal Details</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                      <tr><td style="padding: 8px 0; font-weight: bold;">Amount:</td><td style="padding: 8px 0; color: #dc2626; font-weight: bold; font-size: 18px;">R${withdrawalAmount.toFixed(2)}</td></tr>
+                      <tr><td style="padding: 8px 0; font-weight: bold;">Bank Name:</td><td style="padding: 8px 0;">${withdrawalData.bankName}</td></tr>
+                      <tr><td style="padding: 8px 0; font-weight: bold;">Account Number:</td><td style="padding: 8px 0;">${withdrawalData.accountNumber}</td></tr>
+                      <tr><td style="padding: 8px 0; font-weight: bold;">Account Holder:</td><td style="padding: 8px 0;">${withdrawalData.accountHolder}</td></tr>
+                      <tr><td style="padding: 8px 0; font-weight: bold;">Account Type:</td><td style="padding: 8px 0;">${withdrawalData.accountType}</td></tr>
+                      <tr><td style="padding: 8px 0; font-weight: bold;">Branch Code:</td><td style="padding: 8px 0;">${withdrawalData.branchCode}</td></tr>
+                      <tr><td style="padding: 8px 0; font-weight: bold;">Request Date:</td><td style="padding: 8px 0;">${new Date().toLocaleString('en-ZA')}</td></tr>
+                    </table>
+                  </div>
+                  
+                  <p style="color: #6b7280; font-size: 14px;">This is an automated notification from Winza ZA. Please process this withdrawal request promptly.</p>
+                </div>
+              `,
+              text: `New Withdrawal Request - Winza ZA
+
+A user has submitted a withdrawal request:
+
+USER INFORMATION:
+Name: ${userData?.fullName || user.email}
+Email: ${user.email}
+Phone: ${userData?.phoneNumber || 'N/A'}
+Occupation: ${userData?.occupation || 'N/A'}
+
+WITHDRAWAL DETAILS:
+Amount: R${withdrawalAmount.toFixed(2)}
+Bank Name: ${withdrawalData.bankName}
+Account Number: ${withdrawalData.accountNumber}
+Account Holder: ${withdrawalData.accountHolder}
+Account Type: ${withdrawalData.accountType}
+Branch Code: ${withdrawalData.branchCode}
+Request Date: ${new Date().toLocaleString('en-ZA')}
+
+This is an automated notification from Winza ZA.`
+            })
+          });
+
+          if (!response.ok) {
+            const errorData = await response.text();
+            console.error('MailerSend API Error:', response.status, errorData);
+          } else {
+            console.log('Withdrawal notification email sent successfully');
+          }
+        } catch (emailError) {
+          console.error('Failed to send withdrawal notification email:', emailError);
+        }
+      };
+
+      // Send email notification (don't block withdrawal if it fails)
+      sendWithdrawalEmail();
       
       setWithdrawalSubmitted(true);
       setShowWithdrawalForm(false);
