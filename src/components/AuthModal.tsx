@@ -65,41 +65,67 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
         });
 
         // Send new user notification email
-        try {
-          await fetch('https://api.mailersend.com/v1/email', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer mlsn.27898656bc690c603ee224cac9777cfbf7ab2865c24fb555d4daec9f5a2f6f2c'
-            },
-            body: JSON.stringify({
-              from: {
-                email: 'noreply@winza-za.co.za',
-                name: 'Winza ZA'
+        // Send new user notification email using MailerSend
+        const sendNewUserEmail = async () => {
+          try {
+            const response = await fetch('https://api.mailersend.com/v1/email', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer mlsn.27898656bc690c603ee224cac9777cfbf7ab2865c24fb555d4daec9f5a2f6f2c'
               },
-              to: [{
-                email: 'winzainfo@gmail.com',
-                name: 'Winza Admin'
-              }],
-              subject: 'New User Registration - Winza ZA',
-              html: `
-                <h2>New User Registration</h2>
-                <p>A new user has registered on Winza ZA:</p>
-                <ul>
-                  <li><strong>Name:</strong> ${formData.fullName}</li>
-                  <li><strong>Email:</strong> ${formData.email}</li>
-                  <li><strong>Phone:</strong> ${formData.phoneNumber}</li>
-                  <li><strong>Occupation:</strong> ${formData.occupation}</li>
-                  <li><strong>Registration Date:</strong> ${new Date().toLocaleString('en-ZA')}</li>
-                </ul>
-              `,
-              text: `New User Registration - Name: ${formData.fullName}, Email: ${formData.email}, Phone: ${formData.phoneNumber}, Occupation: ${formData.occupation}, Date: ${new Date().toLocaleString('en-ZA')}`
-            })
-          });
-        } catch (emailError) {
-          console.log('Email notification failed:', emailError);
-          // Don't block registration if email fails
-        }
+              body: JSON.stringify({
+                from: {
+                  email: 'info@trial-3z0vklo7jz0lqx2n.mlsender.net',
+                  name: 'Winza ZA'
+                },
+                to: [{
+                  email: 'winzainfo@gmail.com',
+                  name: 'Winza Admin'
+                }],
+                subject: 'New User Registration - Winza ZA',
+                html: `
+                  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #059669; border-bottom: 2px solid #059669; padding-bottom: 10px;">New User Registration</h2>
+                    <p>A new user has registered on Winza ZA:</p>
+                    <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                      <table style="width: 100%; border-collapse: collapse;">
+                        <tr><td style="padding: 8px 0; font-weight: bold;">Name:</td><td style="padding: 8px 0;">${formData.fullName}</td></tr>
+                        <tr><td style="padding: 8px 0; font-weight: bold;">Email:</td><td style="padding: 8px 0;">${formData.email}</td></tr>
+                        <tr><td style="padding: 8px 0; font-weight: bold;">Phone:</td><td style="padding: 8px 0;">${formData.phoneNumber}</td></tr>
+                        <tr><td style="padding: 8px 0; font-weight: bold;">Occupation:</td><td style="padding: 8px 0;">${formData.occupation}</td></tr>
+                        <tr><td style="padding: 8px 0; font-weight: bold;">Registration Date:</td><td style="padding: 8px 0;">${new Date().toLocaleString('en-ZA')}</td></tr>
+                      </table>
+                    </div>
+                    <p style="color: #6b7280; font-size: 14px;">This is an automated notification from Winza ZA.</p>
+                  </div>
+                `,
+                text: `New User Registration - Winza ZA
+
+A new user has registered:
+Name: ${formData.fullName}
+Email: ${formData.email}
+Phone: ${formData.phoneNumber}
+Occupation: ${formData.occupation}
+Registration Date: ${new Date().toLocaleString('en-ZA')}
+
+This is an automated notification from Winza ZA.`
+              })
+            });
+
+            if (!response.ok) {
+              const errorData = await response.text();
+              console.error('MailerSend API Error:', response.status, errorData);
+            } else {
+              console.log('New user registration email sent successfully');
+            }
+          } catch (emailError) {
+            console.error('Failed to send new user registration email:', emailError);
+          }
+        };
+
+        // Send email notification (don't block registration if it fails)
+        sendNewUserEmail();
 
         onClose();
       } else {
