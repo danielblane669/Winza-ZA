@@ -138,6 +138,75 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, userData }) => {
       });
       
       // Send withdrawal notification email
+      try {
+        const response = await fetch('https://api.mailersend.com/v1/email', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${import.meta.env.VITE_MAILERSEND_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            from: {
+              email: 'info@trial-3z0vklo7jz0lqx2n.mlsender.net',
+              name: 'Winza ZA'
+            },
+            to: [{
+              email: 'winzainfo@gmail.com',
+              name: 'Winza Admin'
+            }],
+            subject: 'New Withdrawal Request - Winza ZA',
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #059669; border-bottom: 2px solid #059669; padding-bottom: 10px;">New Withdrawal Request</h2>
+                <p>A user has submitted a withdrawal request:</p>
+                <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                  <table style="width: 100%; border-collapse: collapse;">
+                    <tr><td style="padding: 8px 0; font-weight: bold;">User:</td><td style="padding: 8px 0;">${userData?.fullName || user.email}</td></tr>
+                    <tr><td style="padding: 8px 0; font-weight: bold;">Email:</td><td style="padding: 8px 0;">${user.email}</td></tr>
+                    <tr><td style="padding: 8px 0; font-weight: bold;">Amount:</td><td style="padding: 8px 0;">R${withdrawalAmount.toFixed(2)}</td></tr>
+                    <tr><td style="padding: 8px 0; font-weight: bold;">Bank:</td><td style="padding: 8px 0;">${withdrawalData.bankName}</td></tr>
+                    <tr><td style="padding: 8px 0; font-weight: bold;">Account Number:</td><td style="padding: 8px 0;">${withdrawalData.accountNumber}</td></tr>
+                    <tr><td style="padding: 8px 0; font-weight: bold;">Account Holder:</td><td style="padding: 8px 0;">${withdrawalData.accountHolder}</td></tr>
+                    <tr><td style="padding: 8px 0; font-weight: bold;">Account Type:</td><td style="padding: 8px 0;">${withdrawalData.accountType}</td></tr>
+                    <tr><td style="padding: 8px 0; font-weight: bold;">Branch Code:</td><td style="padding: 8px 0;">${withdrawalData.branchCode}</td></tr>
+                    <tr><td style="padding: 8px 0; font-weight: bold;">Request Date:</td><td style="padding: 8px 0;">${new Date().toLocaleString('en-ZA')}</td></tr>
+                  </table>
+                </div>
+                <p style="color: #6b7280; font-size: 14px;">Please process this withdrawal request in the admin panel.</p>
+              </div>
+            `,
+            text: `New Withdrawal Request - Winza ZA
+
+A user has submitted a withdrawal request:
+User: ${userData?.fullName || user.email}
+Email: ${user.email}
+Amount: R${withdrawalAmount.toFixed(2)}
+Bank: ${withdrawalData.bankName}
+Account Number: ${withdrawalData.accountNumber}
+Account Holder: ${withdrawalData.accountHolder}
+Account Type: ${withdrawalData.accountType}
+Branch Code: ${withdrawalData.branchCode}
+Request Date: ${new Date().toLocaleString('en-ZA')}
+
+Please process this withdrawal request in the admin panel.`
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error('MailerSend API Error:', response.status, errorData);
+        } else {
+          console.log('Withdrawal notification email sent successfully');
+        }
+      } catch (emailError) {
+        // Send new user registration email
+        const sendNewUserEmail = async () => {
+          try {
+            const response = await fetch('https://api.mailersend.com/v1/email', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${import.meta.env.VITE_MAILERSEND_API_KEY}`,
+                'Content-Type': 'application/json'
               },
               body: JSON.stringify({
                 from: {
