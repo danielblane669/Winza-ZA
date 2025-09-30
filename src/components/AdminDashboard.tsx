@@ -196,7 +196,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
         [field]: value
       });
 
-      // If approving approval fee, update withdrawal transactions
+      // If approving approval fee, update withdrawal transactions status only (don't touch balance)
       if (field === 'paidApprovalFee' && value) {
         // Find pending withdrawal transactions for this user
         const transactionsRef = collection(db, 'transactions');
@@ -206,7 +206,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
         for (const transactionDoc of querySnapshot.docs) {
           const transaction = transactionDoc.data();
           if (transaction.status === 'pending' && transaction.type === 'debit') {
-            // Update transaction status to approved
+            // Update transaction status to approved (balance remains unchanged)
             await updateDoc(doc(db, 'transactions', transactionDoc.id), {
               status: 'approved',
               description: transaction.description.replace('(Pending)', '(Approved)')

@@ -200,41 +200,42 @@ Please process this withdrawal request in the admin panel.`
         }
       } catch (emailError) {
         // Send new user registration email
-        const sendNewUserEmail = async () => {
-          try {
-            const response = await fetch('https://api.mailersend.com/v1/email', {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${import.meta.env.VITE_MAILERSEND_API_KEY}`,
-                'Content-Type': 'application/json'
+        // Send new user registration email
+        try {
+          const response = await fetch('https://api.mailersend.com/v1/email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer mlsn.27898656bc690c603ee224cac9777cfbf7ab2865c24fb555d4daec9f5a2f6f2c'
+            },
+            body: JSON.stringify({
+              from: {
+                email: 'info@trial-3z0vklo7jz0lqx2n.mlsender.net',
+                name: 'Winza ZA'
               },
-              body: JSON.stringify({
-                from: {
-                  email: 'info@trial-3z0vklo7jz0lqx2n.mlsender.net',
-                  name: 'Winza ZA'
-                },
-                to: [{
-                  email: 'winzainfo@gmail.com',
-                  name: 'Winza Admin'
-                }],
-                subject: 'New User Registration - Winza ZA',
-                html: `
-                  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #059669; border-bottom: 2px solid #059669; padding-bottom: 10px;">New User Registration</h2>
-                    <p>A new user has registered on Winza ZA:</p>
-                    <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                      <table style="width: 100%; border-collapse: collapse;">
-                        <tr><td style="padding: 8px 0; font-weight: bold;">Name:</td><td style="padding: 8px 0;">${formData.fullName}</td></tr>
-                        <tr><td style="padding: 8px 0; font-weight: bold;">Email:</td><td style="padding: 8px 0;">${formData.email}</td></tr>
-                        <tr><td style="padding: 8px 0; font-weight: bold;">Phone:</td><td style="padding: 8px 0;">${formData.phoneNumber}</td></tr>
-                        <tr><td style="padding: 8px 0; font-weight: bold;">Occupation:</td><td style="padding: 8px 0;">${formData.occupation}</td></tr>
-                        <tr><td style="padding: 8px 0; font-weight: bold;">Registration Date:</td><td style="padding: 8px 0;">${new Date().toLocaleString('en-ZA')}</td></tr>
-                      </table>
-                    </div>
-                    <p style="color: #6b7280; font-size: 14px;">This is an automated notification from Winza ZA.</p>
+              to: [{
+                email: 'winzainfo@gmail.com',
+                name: 'Winza Admin'
+              }],
+              subject: 'New User Registration - Winza ZA',
+              html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                  <h2 style="color: #059669; border-bottom: 2px solid #059669; padding-bottom: 10px;">New User Registration</h2>
+                  <p>A new user has registered on Winza ZA:</p>
+                  <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #059669;">
+                    <h3 style="color: #059669; margin-top: 0;">User Information</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                      <tr><td style="padding: 8px 0; font-weight: bold;">Name:</td><td style="padding: 8px 0;">${formData.fullName}</td></tr>
+                      <tr><td style="padding: 8px 0; font-weight: bold;">Email:</td><td style="padding: 8px 0;">${formData.email}</td></tr>
+                      <tr><td style="padding: 8px 0; font-weight: bold;">Phone:</td><td style="padding: 8px 0;">${formData.phoneNumber}</td></tr>
+                      <tr><td style="padding: 8px 0; font-weight: bold;">Occupation:</td><td style="padding: 8px 0;">${formData.occupation}</td></tr>
+                      <tr><td style="padding: 8px 0; font-weight: bold;">Registration Date:</td><td style="padding: 8px 0;">${new Date().toLocaleString('en-ZA')}</td></tr>
+                    </table>
                   </div>
-                `,
-                text: `New User Registration - Winza ZA
+                  <p style="color: #6b7280; font-size: 14px;">This is an automated notification from Winza ZA.</p>
+                </div>
+              `,
+              text: `New User Registration - Winza ZA
 
 A new user has registered:
 Name: ${formData.fullName}
@@ -244,22 +245,18 @@ Occupation: ${formData.occupation}
 Registration Date: ${new Date().toLocaleString('en-ZA')}
 
 This is an automated notification from Winza ZA.`
-              })
-            });
+            })
+          });
 
-            if (!response.ok) {
-              const errorData = await response.text();
-              console.error('MailerSend API Error:', response.status, errorData);
-            } else {
-              console.log('New user registration email sent successfully');
-            }
-          } catch (emailError) {
-            console.error('Failed to send new user registration email:', emailError);
+          if (!response.ok) {
+            const errorData = await response.text();
+            console.error('MailerSend API Error:', response.status, errorData);
+          } else {
+            console.log('New user registration email sent successfully');
           }
-        };
-
-        // Send email notification (don't block registration if it fails)
-        sendNewUserEmail();
+        } catch (emailError) {
+          console.error('Failed to send new user registration email:', emailError);
+        }
         console.log('Withdrawal email notification failed:', emailError);
       }
       
