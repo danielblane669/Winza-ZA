@@ -151,7 +151,7 @@ This is an automated notification from Winza ZA.`
           fullName: formData.fullName,
           phoneNumber: formData.phoneNumber,
           occupation: formData.occupation,
-          currentBalance: 1500.00, // Starting balance
+          currentBalance: 0.00, // Starting balance
           withdrawalFee: 150.00,
           approvalFee: 250.00,
           whatsappNumber: '+27630316583',
