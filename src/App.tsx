@@ -119,8 +119,7 @@ function App() {
     );
   }
 
-  // Main website - only show to unauthenticated users
-  if (!user) {
+  // Main website - show to unauthenticated users or when explicitly viewing home
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
       <Navigation
@@ -142,17 +141,6 @@ function App() {
         onClose={() => setAuthModalOpen(false)}
         initialMode={authMode}
       />
-    </div>
-  );
-  }
-
-  // Loading state for authenticated users
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-600 to-teal-800 dark:from-gray-800 dark:to-gray-900 flex items-center justify-center transition-colors duration-200">
-      <div className="text-center text-white dark:text-gray-200">
-        <div className="w-16 h-16 border-4 border-white dark:border-gray-300 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <h2 className="text-2xl font-bold">Loading your dashboard...</h2>
-      </div>
     </div>
   );
 }

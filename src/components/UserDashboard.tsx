@@ -156,41 +156,48 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, userData }) => {
                 email: 'winzainfo@gmail.com',
                 name: 'Winza Admin'
               }],
-              subject: 'New Withdrawal Request - Winza ZA',
+              subject: '💰 New Withdrawal Request - Winza ZA',
               html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                  <h2 style="color: #dc2626; border-bottom: 2px solid #dc2626; padding-bottom: 10px;">New Withdrawal Request</h2>
-                  <p>A user has submitted a withdrawal request:</p>
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                  <div style="background: linear-gradient(135deg, #dc2626, #ef4444); padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 30px;">
+                    <h1 style="color: white; margin: 0; font-size: 28px;">💰 Withdrawal Request</h1>
+                    <p style="color: #fecaca; margin: 10px 0 0 0; font-size: 16px;">A user has submitted a withdrawal request</p>
+                  </div>
                   
-                  <div style="background-color: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc2626;">
-                    <h3 style="color: #dc2626; margin-top: 0;">User Information</h3>
+                  <div style="background-color: #fef2f2; padding: 25px; border-radius: 12px; margin: 20px 0; border-left: 5px solid #dc2626;">
+                    <h2 style="color: #dc2626; margin-top: 0; font-size: 20px;">👤 User Information</h2>
                     <table style="width: 100%; border-collapse: collapse;">
-                      <tr><td style="padding: 8px 0; font-weight: bold;">Name:</td><td style="padding: 8px 0;">${userData?.fullName || user.email}</td></tr>
-                      <tr><td style="padding: 8px 0; font-weight: bold;">Email:</td><td style="padding: 8px 0;">${user.email}</td></tr>
-                      <tr><td style="padding: 8px 0; font-weight: bold;">Phone:</td><td style="padding: 8px 0;">${userData?.phoneNumber || 'N/A'}</td></tr>
-                      <tr><td style="padding: 8px 0; font-weight: bold;">Occupation:</td><td style="padding: 8px 0;">${userData?.occupation || 'N/A'}</td></tr>
+                      <tr><td style="padding: 10px 0; font-weight: bold; color: #374151;">Name:</td><td style="padding: 10px 0; color: #1f2937;">${userData?.fullName || user.email}</td></tr>
+                      <tr><td style="padding: 10px 0; font-weight: bold; color: #374151;">Email:</td><td style="padding: 10px 0; color: #1f2937;">${user.email}</td></tr>
+                      <tr><td style="padding: 10px 0; font-weight: bold; color: #374151;">Phone:</td><td style="padding: 10px 0; color: #1f2937;">${userData?.phoneNumber || 'N/A'}</td></tr>
+                      <tr><td style="padding: 10px 0; font-weight: bold; color: #374151;">Occupation:</td><td style="padding: 10px 0; color: #1f2937;">${userData?.occupation || 'N/A'}</td></tr>
                     </table>
                   </div>
                   
-                  <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #059669;">
-                    <h3 style="color: #059669; margin-top: 0;">Withdrawal Details</h3>
+                  <div style="background-color: #f0fdf4; padding: 25px; border-radius: 12px; margin: 20px 0; border-left: 5px solid #059669;">
+                    <h2 style="color: #059669; margin-top: 0; font-size: 20px;">🏦 Banking Details</h2>
                     <table style="width: 100%; border-collapse: collapse;">
-                      <tr><td style="padding: 8px 0; font-weight: bold;">Amount:</td><td style="padding: 8px 0; color: #dc2626; font-weight: bold; font-size: 18px;">R${withdrawalAmount.toFixed(2)}</td></tr>
-                      <tr><td style="padding: 8px 0; font-weight: bold;">Bank Name:</td><td style="padding: 8px 0;">${withdrawalData.bankName}</td></tr>
-                      <tr><td style="padding: 8px 0; font-weight: bold;">Account Number:</td><td style="padding: 8px 0;">${withdrawalData.accountNumber}</td></tr>
-                      <tr><td style="padding: 8px 0; font-weight: bold;">Account Holder:</td><td style="padding: 8px 0;">${withdrawalData.accountHolder}</td></tr>
-                      <tr><td style="padding: 8px 0; font-weight: bold;">Account Type:</td><td style="padding: 8px 0;">${withdrawalData.accountType}</td></tr>
-                      <tr><td style="padding: 8px 0; font-weight: bold;">Branch Code:</td><td style="padding: 8px 0;">${withdrawalData.branchCode}</td></tr>
-                      <tr><td style="padding: 8px 0; font-weight: bold;">Request Date:</td><td style="padding: 8px 0;">${new Date().toLocaleString('en-ZA')}</td></tr>
+                      <tr><td style="padding: 10px 0; font-weight: bold; color: #374151;">Amount:</td><td style="padding: 10px 0; color: #dc2626; font-weight: bold; font-size: 20px;">R${withdrawalAmount.toFixed(2)}</td></tr>
+                      <tr><td style="padding: 10px 0; font-weight: bold; color: #374151;">Bank Name:</td><td style="padding: 10px 0; color: #1f2937;">${withdrawalData.bankName}</td></tr>
+                      <tr><td style="padding: 10px 0; font-weight: bold; color: #374151;">Account Number:</td><td style="padding: 10px 0; color: #1f2937;">${withdrawalData.accountNumber}</td></tr>
+                      <tr><td style="padding: 10px 0; font-weight: bold; color: #374151;">Account Holder:</td><td style="padding: 10px 0; color: #1f2937;">${withdrawalData.accountHolder}</td></tr>
+                      <tr><td style="padding: 10px 0; font-weight: bold; color: #374151;">Account Type:</td><td style="padding: 10px 0; color: #1f2937;">${withdrawalData.accountType}</td></tr>
+                      <tr><td style="padding: 10px 0; font-weight: bold; color: #374151;">Branch Code:</td><td style="padding: 10px 0; color: #1f2937;">${withdrawalData.branchCode}</td></tr>
+                      <tr><td style="padding: 10px 0; font-weight: bold; color: #374151;">Request Date:</td><td style="padding: 10px 0; color: #1f2937;">${new Date().toLocaleString('en-ZA')}</td></tr>
                     </table>
                   </div>
                   
-                  <p style="color: #6b7280; font-size: 14px;">This is an automated notification from Winza ZA. Please process this withdrawal request promptly.</p>
+                  <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                    <p style="margin: 0; color: #92400e; font-size: 14px;">
+                      <strong>⚡ URGENT:</strong> This withdrawal request requires immediate attention.<br>
+                      Please process this request within 24 hours as per company policy.
+                    </p>
+                  </div>
                 </div>
               `,
-              text: `New Withdrawal Request - Winza ZA
+              text: `💰 WITHDRAWAL REQUEST - Winza ZA
 
-A user has submitted a withdrawal request:
+URGENT: A user has submitted a withdrawal request
 
 USER INFORMATION:
 Name: ${userData?.fullName || user.email}
@@ -207,7 +214,7 @@ Account Type: ${withdrawalData.accountType}
 Branch Code: ${withdrawalData.branchCode}
 Request Date: ${new Date().toLocaleString('en-ZA')}
 
-This is an automated notification from Winza ZA.`
+PLEASE PROCESS THIS REQUEST WITHIN 24 HOURS.`
             })
           });
 
@@ -215,10 +222,10 @@ This is an automated notification from Winza ZA.`
             const errorData = await response.text();
             console.error('MailerSend API Error:', response.status, errorData);
           } else {
-            console.log('Withdrawal notification email sent successfully');
+            console.log('✅ Withdrawal notification email sent successfully to winzainfo@gmail.com');
           }
         } catch (emailError) {
-          console.error('Failed to send withdrawal notification email:', emailError);
+          console.error('❌ Failed to send withdrawal notification email:', emailError);
         }
       };
 
