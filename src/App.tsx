@@ -35,15 +35,9 @@ function App() {
         if (doc.exists()) {
           const data = { id: doc.id, ...doc.data() };
           setUserData(data);
-          
-          // Redirect authenticated users to appropriate dashboard
-          if (currentView === '' || currentView === 'home') {
-            if (data.isAdmin) {
-              setCurrentView('admin');
-            } else {
-              setCurrentView('dashboard');
-            }
-          }
+
+          // Auto-redirect authenticated users to appropriate dashboard
+          setCurrentView(data.isAdmin ? 'admin' : 'dashboard');
         }
       });
 
@@ -51,9 +45,7 @@ function App() {
     } else {
       setUserData(null);
       // Redirect unauthenticated users to home
-      if (currentView !== 'home') {
-        setCurrentView('home');
-      }
+      setCurrentView('home');
     }
   }, [user]);
 
