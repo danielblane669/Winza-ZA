@@ -1,43 +1,78 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users can read and write their own user document
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-      // Allow admins to read and write any user document
-      allow read, write: if request.auth != null && 
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+      allow read: if isOwner(userId) || isAdmin();
+
+      allow create: if isOwner(userId) &&
+        request.resource.data.email is string &&
+        request.resource.data.fullName is string &&
+        request.resource.data.phoneNumber is string &&
+        request.resource.data.occupation is string &&
+        request.resource.data.currentBalance is number &&
+        request.resource.data.currentBalance >= 0;
+
+      allow update: if (isOwner(userId) &&
+        request.resource.data.email == resource.data.email &&
+        request.resource.data.isAdmin == resource.data.isAdmin) || isAdmin();
+
+      allow delete: if isAdmin();
     }
-    
-    // Users can read and write their own transactions
+
     match /transactions/{transactionId} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
-      // Allow admins to read and write any transaction
-      allow read, write: if request.auth != null && 
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+      allow read: if isAuthenticated() &&
+        (request.auth.uid == resource.data.userId || isAdmin());
+
+      allow create: if isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.type in ['credit', 'debit'] &&
+        request.resource.data.amount is number &&
+        request.resource.data.amount > 0 &&
+        request.resource.data.description is string &&
+        request.resource.data.timestamp is string;
+
+      allow update, delete: if isAdmin();
     }
-    
-    // Users can create and read their own withdrawal requests
+
     match /withdrawals/{withdrawalId} {
-      allow read, create: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow update: if request.auth != null && request.auth.uid == resource.data.userId && 
-        resource.data.status == 'pending';
-      // Allow admins to read and update any withdrawal
-      allow read, write: if request.auth != null && 
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+      allow read: if isAuthenticated() &&
+        (request.auth.uid == resource.data.userId || isAdmin());
+
+      allow create: if isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.amount is number &&
+        request.resource.data.amount > 0 &&
+        request.resource.data.status == 'pending' &&
+        request.resource.data.bankName is string &&
+        request.resource.data.accountNumber is string &&
+        request.resource.data.accountHolder is string;
+
+      allow update: if (isAuthenticated() &&
+        request.auth.uid == resource.data.userId &&
+        resource.data.status == 'pending') || isAdmin();
+
+      allow delete: if isAdmin();
     }
-    
-    // App settings - only admins can read and write
+
     match /settings/{settingId} {
-      allow read, write: if request.auth != null && 
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+      allow read, write: if isAdmin();
     }
-    
-    // Deny all other access
+
     match /{document=**} {
       allow read, write: if false;
     }
