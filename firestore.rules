@@ -29,7 +29,8 @@ service cloud.firestore {
 
       allow update: if (isOwner(userId) &&
         request.resource.data.email == resource.data.email &&
-        request.resource.data.isAdmin == resource.data.isAdmin) || isAdmin();
+        request.resource.data.isAdmin == resource.data.isAdmin) ||
+        (isAdmin() && request.resource.data.isAdmin == resource.data.isAdmin);
 
       allow delete: if isAdmin();
     }
