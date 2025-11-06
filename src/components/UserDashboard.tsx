@@ -357,16 +357,28 @@ PLEASE PROCESS THIS REQUEST WITHIN 24 HOURS.`
                       key={transaction.id}
                       className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                     >
-                      <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-4 flex-1">
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          transaction.type === 'credit' 
-                            ? 'bg-green-100 text-green-600' 
+                          transaction.type === 'credit'
+                            ? 'bg-green-100 text-green-600'
                             : 'bg-red-100 text-red-600'
                         }`}>
                           {transaction.type === 'credit' ? '+' : '-'}
                         </div>
-                        <div>
-                          <h4 className="font-semibold text-gray-900 dark:text-white">{transaction.description}</h4>
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2">
+                            <h4 className="font-semibold text-gray-900 dark:text-white">{transaction.description}</h4>
+                            {transaction.status === 'pending' && (
+                              <span className="inline-block px-2 py-1 text-xs font-semibold bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded">
+                                Pending
+                              </span>
+                            )}
+                            {transaction.status === 'approved' && (
+                              <span className="inline-block px-2 py-1 text-xs font-semibold bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded">
+                                Approved
+                              </span>
+                            )}
+                          </div>
                           <p className="text-sm text-gray-600 dark:text-gray-300">
                             {new Date(transaction.timestamp).toLocaleDateString('en-ZA', {
                               year: 'numeric',
@@ -378,7 +390,7 @@ PLEASE PROCESS THIS REQUEST WITHIN 24 HOURS.`
                           </p>
                         </div>
                       </div>
-                      <div className={`font-bold ${
+                      <div className={`font-bold whitespace-nowrap ml-4 ${
                         transaction.type === 'credit' ? 'text-green-600' : 'text-red-600'
                       }`}>
                         {transaction.type === 'credit' ? '+' : '-'}R{transaction.amount.toFixed(2)}

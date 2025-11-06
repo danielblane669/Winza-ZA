@@ -88,7 +88,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
 
   const handleBalanceUpdate = async (type: 'add' | 'reduce') => {
     if (!selectedUser) return;
-    
+
     const amount = parseFloat(balanceAmount);
     if (isNaN(amount) || amount <= 0) {
       setError('Please enter a valid amount');
@@ -102,17 +102,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
 
     setLoading(true);
     setError('');
+    setSuccess('');
 
     try {
       const userDocRef = doc(db, 'users', selectedUser.id);
       const finalAmount = type === 'add' ? amount : -amount;
 
-      // Update user balance
-      await updateDoc(userDocRef, {
-        currentBalance: increment(finalAmount)
-      });
-
-      // Add transaction record
+      // Create transaction record first
       await addDoc(collection(db, 'transactions'), {
         userId: selectedUser.id,
         type: type === 'add' ? 'credit' : 'debit',
@@ -121,6 +117,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
         timestamp: new Date().toISOString(),
         adminId: user.uid,
         adminEmail: user.email
+      });
+
+      // Update user balance
+      await updateDoc(userDocRef, {
+        currentBalance: increment(finalAmount)
       });
 
       // Refresh user data
@@ -136,7 +137,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
       setBalanceAmount('');
       setDescription('');
     } catch (err) {
-      setError(`Error ${type === 'add' ? 'adding' : 'reducing'} balance`);
+      console.error('Balance update error:', err);
+      setError(`Error ${type === 'add' ? 'adding' : 'reducing'} balance: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
